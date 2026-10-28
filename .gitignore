@@ -1,0 +1,23 @@
+# Never commit a vault or its plaintext from this repo
+secrets.env
+secrets.env.enc
+*.enc
+*.tmp.*
+*.bak
+
+# Agent runtime files (port, token, pid, log)
+.secrets-agent/
+
+# Other common secrets patterns
+.env
+.env.local
+.env.*.local
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
