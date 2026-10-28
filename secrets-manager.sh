@@ -205,7 +205,8 @@ _sm-export-lines() {
         fi
         export "$key=$value"
         _SM_COUNT=$((_SM_COUNT + 1))
-    done <<< "$1"
+    # Process substitution, not a here-string: older Bash writes here-strings to a temp file.
+    done < <(printf '%s\n' "$1")
 }
 
 # Upsert KEY=VALUE into plaintext $1, print the result.
@@ -502,9 +503,10 @@ _get-new-secret-input() {
                     --add-entry="Secret Name (e.g. MY_API_KEY)" \
                     --add-password="Value" \
                     --add-password="Confirm Value" \
-                    --separator="|" 2>/dev/null)
+                    --separator=$'\x1f' 2>/dev/null)
                 [ -z "$form_out" ] && return
-                IFS='|' read -r name v1 v2 <<< "$form_out"
+                # Unit separator: cannot be typed into the form, so values may contain any text.
+                IFS=$'\x1f' read -r name v1 v2 < <(printf '%s\n' "$form_out")
                 if [ -z "$name" ]; then
                     zenity --error --text="Secret name cannot be empty." 2>/dev/null
                     return
